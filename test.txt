@@ -1,0 +1,7 @@
+docker run -it -d --name slurm_master \
+--hostname slurm-master --network slurm_network \
+--add-host slurm-worker-1:172.18.5.110 \
+--user admin \
+--ip 172.18.5.110 \
+-e SLURM_NODENAME=slurm-master \
+slurm_master

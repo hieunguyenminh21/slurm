@@ -4,7 +4,7 @@ FROM --platform=linux/amd64 ubuntu:20.04
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt update -y
 # Install needed packages
-RUN apt install munge nano build-essential git mariadb-server wget slurmd slurm-client slurmctld sudo openssh-server -y
+RUN apt install munge nano build-essential git mariadb-server wget slurmd slurm-client slurmctld sudo openssh-server cgroup-tools libcgroup1 -y
 
 # Add a user to manage everything, and be able to ssh (will be handy everywhere)
 RUN useradd -m admin -s /usr/bin/bash -d /home/admin && echo "admin:admin" | chpasswd && adduser admin sudo && echo "admin     ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
@@ -34,5 +34,12 @@ RUN mkdir -p /var/log/slurm && \
 RUN mkdir -p /var/spool/slurmd && \
     chown slurm:slurm /var/spool/slurmd && \
     chmod 755 /var/spool/slurmd
+
+# Tạo thư mục cgroup mount point
+RUN mkdir -p /sys/fs/cgroup
+
+# Thêm cgroup.conf
+COPY cgroup.conf /etc/slurm/
+COPY cgroup.conf /etc/slurm-llnl/
 
 ENTRYPOINT ["/etc/slurm/docker-entrypoint.sh"]
